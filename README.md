@@ -40,6 +40,7 @@
 - Add a better way to handle the user's session and authentication (using secure cookies instead of local storage for storing the access token)
 - Restructure the components to be more reusable and maintainable
 - Use an SSR framework like Next.js to improve SEO and performance
+- Add loading screens and skeletons to improve the user experience
 
 ### Infrastructure
 - Improve current dockerfiles as they are not production ready
