@@ -1,0 +1,79 @@
+version: '3.1'
+services:
+  mysql:
+    hostname: ${DATABASE_HOST}
+    image: mysql:8.3.0
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DATABASE_PASSWORD}
+    ports:
+      - "${DATABASE_PORT}:3306"
+    volumes:
+      - mysql:/var/lib/mysql
+    networks:
+      - local
+  migrator:
+    image: mysql:8.3.0
+    volumes:
+      - ./infrastructure/db/migrations:/migrations
+      - ./infrastructure/db/migrator.sh:/migrator.sh
+    environment:
+      MYSQL_HOST: ${DATABASE_HOST}
+      MYSQL_PORT: ${DATABASE_PORT}
+      MYSQL_USER: ${DATABASE_USERNAME}
+      MYSQL_PASSWORD: ${DATABASE_PASSWORD}
+    depends_on:
+      - mysql
+    networks:
+      - local
+    entrypoint: ["/bin/bash", "/migrator.sh"]
+  redis:
+    hostname: ${REDIS_HOST}
+    image: redis:latest
+    restart: always
+    ports:
+      - "${REDIS_PORT}:6379"
+    networks:
+      - local
+  backend:
+    hostname: ${BACKEND_HOST}
+    environment:
+      DATABASE_HOST: ${DATABASE_HOST}
+      DATABASE_PORT: ${DATABASE_PORT}
+      DATABASE_USER: ${DATABASE_USER}
+      DATABASE_PASSWORD: ${DATABASE_PASSWORD}
+      DATABASE_NAME: ${DATABASE_NAME}
+      REDIS_HOST: ${REDIS_HOST}
+      REDIS_PORT: ${REDIS_PORT}
+      GIPHY_API_KEY: ${GIPHY_API_KEY}
+      REST_PORT: ${BACKEND_PORT}
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    restart: always
+    depends_on:
+      - mysql
+      - redis
+      - migrator
+    ports:
+      - "${BACKEND_PORT}:${BACKEND_PORT}"
+    networks:
+      - local
+  frontend:
+    hostname: ${FRONTEND_HOST}
+    environment:
+      VITE_API_BASE_URL: "http://localhost:${BACKEND_PORT}"
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    restart: always
+    depends_on:
+      - backend
+    ports:
+      - "${FRONTEND_PORT}:5173"
+    networks:
+      - local
+volumes:
+  mysql:
+networks:
+  local:
