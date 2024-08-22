@@ -13,10 +13,14 @@
 
 3. Run the following command to start the environment
     sudo docker compose up -d
+    
+4. Have fun exploring the Giphy Store at http://localhost
 ```
 
 ## Possible Improvements for Scalability and Maintainability
 ### Backend
+- Use a popular framework like NestJS to improve the maintainability and scalability of the backend.
+    Also helps define strict rules for contributing to the codebase.
 - Add unit tests and e2e test for the full system integration and functionality
 - Add more error handling and logging for both services and the API
 - Add a better validation input for DTOs
