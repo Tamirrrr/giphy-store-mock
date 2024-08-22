@@ -66,7 +66,10 @@ export default new class GifService {
                 logger.error('[GifService@getTrending] Failed to create gif', error);
             }
         }
-        await this.setTrendingToCache(gifs);
+
+        if (gifs.length > 0) {
+            await this.setTrendingToCache(gifs);
+        }
 
         return gifs;
     }
@@ -95,7 +98,10 @@ export default new class GifService {
                 logger.error('[GifService@search] Failed to create gif', error);
             }
         }
-        await this.setSearchToCache(query, gifs);
+
+        if (gifs.length > 0) {
+            await this.setSearchToCache(query, gifs);
+        }
 
         return gifs;
     }
